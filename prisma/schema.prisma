@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  name             String?
+  username         String?
+  email            String     @unique
+  image            String?
+  hashedPassword   String
+  emailVerified    DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  feedBacks        feedback[]
+  comments         comment[]
+  replies          reply[]
+  accounts         Account[]
+  repliesToreplies replies[]
+  upVoted          String[]
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model feedback {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String?
+  description String?
+  upvotes     Int?      @default(0)
+  category    String?
+  status      String?
+  detail      String?
+  comments    comment[]
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model comment {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  content    String
+  replies    reply[]
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  feedbackId String   @db.ObjectId
+  feedback   feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+}
+
+model reply {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  content          String
+  replyinTo        String
+  userId           String    @db.ObjectId
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commentId        String    @db.ObjectId
+  comment          comment   @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  repliesToreplies replies[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+
+
+model replies {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  replyContent String
+  replyToinTo  String
+  userId       String?  @db.ObjectId
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replyId      String?  @db.ObjectId
+  reply        reply?   @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
