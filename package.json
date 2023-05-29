@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
+
   },
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
