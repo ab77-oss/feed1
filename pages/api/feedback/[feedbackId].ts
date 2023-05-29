@@ -1,13 +1,9 @@
-import Cors from 'cors';
+
 import { NextApiRequest, NextApiResponse } from "next";
 
 import prisma from "@/libs/db";
 import serverAuth from "@/libs/serverAuth";
 
-// Initialize CORS
-const cors = Cors({
-  methods: ['GET', 'PATCH', 'DELETE'], // Define the HTTP methods allowed for CORS
-});
 
 
 export default async function handler(
@@ -15,15 +11,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
 
-// Apply CORS to the request
-await new Promise((resolve, reject) => {
-  cors(req, res, (result) => {
-    if (result instanceof Error) {
-      return reject(result);
-    }
-    return resolve(result);
-  });
-});
+
 
 
 
